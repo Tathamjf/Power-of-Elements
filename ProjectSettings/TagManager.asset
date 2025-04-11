@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Cristal
+  - PowerUp
   layers:
   - Default
   - TransparentFX

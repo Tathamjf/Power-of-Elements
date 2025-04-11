@@ -10,11 +10,13 @@ public class Movimento_Player : MonoBehaviour
     [SerializeField] private Transform footPlayer;
     [SerializeField] private LayerMask colisaoPlayer;
 
-    private float forcaY;
+    public float forcaY;
 
     //sistema de vida
     public int vidaMaxima = 100;
-    private int vidaAtual;
+    public int vidaAtual;
+
+    [SerializeField] private BarraDeVida barraDeVida;
 
     //sistema de ataque
     private bool podeMover = true; // Começa podendo se mover
@@ -30,7 +32,7 @@ public class Movimento_Player : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         vidaAtual = vidaMaxima;
-
+                
         myCamera = Camera.main.transform;
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
@@ -70,7 +72,7 @@ public class Movimento_Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && estaNoChao)
         {
-            forcaY = 6f;
+            forcaY = 10f;
             animator.SetTrigger("Jump");
         }
 
@@ -128,6 +130,7 @@ public class Movimento_Player : MonoBehaviour
         // Duração da animação de dano, ex: 0.5 segundos
         Invoke("FimDano", 0.5f);
 
+        
         if (vidaAtual <= 0)
         {
             Morrer();
@@ -145,6 +148,12 @@ public class Movimento_Player : MonoBehaviour
         animator.SetTrigger("Die");
         Debug.Log(gameObject.name + " morreu!");
         Destroy(gameObject); 
+    }
+
+    public void TomarImpulso(Vector3 direcao, float forca, float impulso)
+    {
+        impulso = direcao.y * forca;
+        // Se quiser empurrar também nos eixos X ou Z, você pode ajustar `velocidadeAtual`
     }
 
 }

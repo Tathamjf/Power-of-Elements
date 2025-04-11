@@ -3,18 +3,10 @@ using UnityEngine.UI;
 
 public class BarraDeVida : MonoBehaviour
 {
-    public Slider slider;
-
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
+    public Image slider;
         
-    }
-
-    // Update is called once per frame
-    void Update()
+    public void AlterarBarraVida(int vidaAtual, int vidaMaxima)
     {
-        
+        slider.fillAmount = (float) vidaAtual / vidaMaxima;
     }
 }
