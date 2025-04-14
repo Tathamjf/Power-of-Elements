@@ -31,11 +31,11 @@ public class SpikeTrapDemo : MonoBehaviour {
         StartCoroutine(OpenCloseTrap());
     }
 
-    // Essa função será chamada via Animation Event no momento certo da animação
+   
     public void CausarDano()
     {
         if (!podeCausarDano) return;
-        Debug.Log("Pôde causar dano!");
+        //Debug.Log("Pôde causar dano!");
         Collider[] atingidos = Physics.OverlapBox(transform.position, new Vector3(1, 1, 1), Quaternion.identity);
 
         foreach (Collider col in atingidos)

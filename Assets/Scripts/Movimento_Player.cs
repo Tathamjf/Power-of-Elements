@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Movimento_Player : MonoBehaviour
@@ -11,6 +12,22 @@ public class Movimento_Player : MonoBehaviour
     [SerializeField] private LayerMask colisaoPlayer;
 
     public float forcaY;
+
+    //POWER UPS!!!
+    // power-up velocidade
+    public float velocidadeBase = 5f;
+    private float velocidadeAtual;
+
+    private Coroutine boostCoroutine;
+
+    //power-up pulo
+    private float forcaPuloBase = 10f; 
+    private Coroutine puloCoroutine;
+
+    //power-up invencibilidade
+    private bool estaInvencivel = false;
+    private Coroutine invencibilidadeCoroutine;
+
 
     //sistema de vida
     public int vidaMaxima = 100;
@@ -32,7 +49,9 @@ public class Movimento_Player : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         vidaAtual = vidaMaxima;
-                
+        velocidadeAtual = velocidadeBase;
+
+
         myCamera = Camera.main.transform;
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
@@ -57,7 +76,8 @@ public class Movimento_Player : MonoBehaviour
         movimento = myCamera.TransformDirection(movimento);
         movimento.y = 0;
 
-        Vector3 movimentoFinal = (movimento * 5f) + new Vector3(0, forcaY, 0);
+        Vector3 movimentoFinal = (movimento * velocidadeAtual) + new Vector3(0, forcaY, 0);
+
         controller.Move(movimentoFinal * Time.deltaTime);
 
         if (movimento != Vector3.zero)
@@ -70,9 +90,11 @@ public class Movimento_Player : MonoBehaviour
         estaNoChao = Physics.CheckSphere(footPlayer.position, 0.3f, colisaoPlayer);
         animator.SetBool("EstaNoChao", estaNoChao);
 
+
+        //pulo
         if (Input.GetKeyDown(KeyCode.Space) && estaNoChao)
         {
-            forcaY = 10f;
+            forcaY = forcaPuloBase;
             animator.SetTrigger("Jump");
         }
 
@@ -123,14 +145,14 @@ public class Movimento_Player : MonoBehaviour
 
     public void TomarDano(int danoRecebido)
     {
+        if (estaInvencivel) return; // Ignora dano se invencível
+
         vidaAtual -= danoRecebido;
         animator.SetTrigger("TomarDano");
         podeMover = false;
 
-        // Duração da animação de dano, ex: 0.5 segundos
         Invoke("FimDano", 0.5f);
 
-        
         if (vidaAtual <= 0)
         {
             Morrer();
@@ -153,7 +175,78 @@ public class Movimento_Player : MonoBehaviour
     public void TomarImpulso(Vector3 direcao, float forca, float impulso)
     {
         impulso = direcao.y * forca;
-        // Se quiser empurrar também nos eixos X ou Z, você pode ajustar `velocidadeAtual`
+        
+    }
+
+
+    //POWER UPs
+
+
+    //power-up velocidade
+    public void AumentarVelocidadeTemporariamente(float multiplicador, float duracao)
+    {
+        if (boostCoroutine != null)
+        {
+            StopCoroutine(boostCoroutine);
+        }
+        boostCoroutine = StartCoroutine(SpeedBoostCoroutine(multiplicador, duracao));
+    }
+
+    private IEnumerator SpeedBoostCoroutine(float multiplicador, float duracao)
+    {
+        velocidadeAtual = velocidadeBase * multiplicador;
+        yield return new WaitForSeconds(duracao);
+        velocidadeAtual = velocidadeBase;
+    }
+
+    //power-ip pulo
+    public void AumentarPuloTemporariamente(float multiplicador, float duracao)
+    {
+        if (puloCoroutine != null)
+        {
+            StopCoroutine(puloCoroutine);
+        }
+
+        puloCoroutine = StartCoroutine(PuloBoostCoroutine(multiplicador, duracao));
+    }
+
+    private IEnumerator PuloBoostCoroutine(float multiplicador, float duracao)
+    {
+        forcaPuloBase *= multiplicador;
+        Debug.Log("Pulo aumentado!");
+        yield return new WaitForSeconds(duracao);
+        forcaPuloBase /= multiplicador;
+        Debug.Log("Pulo voltou ao normal.");
+    }
+
+    //power-up invencibilidade
+    public void AtivarInvencibilidadeTemporaria(float duracao)
+    {
+        if (invencibilidadeCoroutine != null)
+        {
+            StopCoroutine(invencibilidadeCoroutine);
+        }
+        invencibilidadeCoroutine = StartCoroutine(InvencibilidadeCoroutine(duracao));
+    }
+
+    private IEnumerator InvencibilidadeCoroutine(float duracao)
+    {
+        estaInvencivel = true;
+        Debug.Log("Invencível!");
+
+        // Efeito visual (piscar)
+        Renderer rend = GetComponentInChildren<Renderer>();
+        float tempo = 0f;
+        while (tempo < duracao)
+        {
+            if (rend != null) rend.enabled = !rend.enabled;
+            yield return new WaitForSeconds(0.2f);
+            tempo += 0.2f;
+        }
+
+        if (rend != null) rend.enabled = true;
+        estaInvencivel = false;
+        Debug.Log("Invencibilidade acabou.");
     }
 
 }
