@@ -1,4 +1,4 @@
-using System.Collections;
+Ôªøusing System.Collections;
 using UnityEngine;
 
 public class Movimento_Player : MonoBehaviour
@@ -36,7 +36,7 @@ public class Movimento_Player : MonoBehaviour
     [SerializeField] private BarraDeVida barraDeVida;
 
     //sistema de ataque
-    private bool podeMover = true; // ComeÁa podendo se mover
+    private bool podeMover = true; // Come√ßa podendo se mover
 
     public int dano = 25;
     public float alcance = 2f;
@@ -63,7 +63,7 @@ public class Movimento_Player : MonoBehaviour
     {
         if (!podeMover)
         {
-            // Ainda aplica gravidade enquanto n„o pode mover
+            // Ainda aplica gravidade enquanto n√£o pode mover
             controller.Move(new Vector3(0, forcaY, 0) * Time.deltaTime);
             return;
         }
@@ -110,7 +110,7 @@ public class Movimento_Player : MonoBehaviour
             podeMover = false;
             animator.SetTrigger("Attack");
 
-            // Espera o tempo REAL da animaÁ„o antes de liberar o movimento
+            // Espera o tempo REAL da anima√ß√£o antes de liberar o movimento
             Invoke("FimDoAtaque", 0.8f); 
         }
     }
@@ -125,7 +125,7 @@ public class Movimento_Player : MonoBehaviour
             if (golem != null)
             {
                 golem.TomarDano(dano);
-                Debug.Log("Dano aplicado via evento da animaÁ„o!");
+                Debug.Log("Dano aplicado via evento da anima√ß√£o!");
             }
         }
 
@@ -145,7 +145,7 @@ public class Movimento_Player : MonoBehaviour
 
     public void TomarDano(int danoRecebido)
     {
-        if (estaInvencivel) return; // Ignora dano se invencÌvel
+        if (estaInvencivel) return; // Ignora dano se invenc√≠vel
 
         vidaAtual -= danoRecebido;
         animator.SetTrigger("TomarDano");
@@ -200,14 +200,14 @@ public class Movimento_Player : MonoBehaviour
     }
 
     //power-ip pulo
-    public void AumentarPuloTemporariamente(float multiplicador, float duracao)
+    public void AumentarPuloTemporariamente(float multiplicador)
     {
         if (puloCoroutine != null)
         {
             StopCoroutine(puloCoroutine);
         }
 
-        puloCoroutine = StartCoroutine(PuloBoostCoroutine(multiplicador, duracao));
+        //puloCoroutine = StartCoroutine(PuloBoostCoroutine(multiplicador, duracao));
     }
 
     private IEnumerator PuloBoostCoroutine(float multiplicador, float duracao)
@@ -232,7 +232,7 @@ public class Movimento_Player : MonoBehaviour
     private IEnumerator InvencibilidadeCoroutine(float duracao)
     {
         estaInvencivel = true;
-        Debug.Log("InvencÌvel!");
+        Debug.Log("Invenc√≠vel!");
 
         // Efeito visual (piscar)
         Renderer rend = GetComponentInChildren<Renderer>();

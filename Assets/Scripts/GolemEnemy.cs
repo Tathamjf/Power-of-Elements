@@ -1,25 +1,29 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 
 public class GolemEnemy : MonoBehaviour
 {
     public Transform player;
     public float speed = 3.0f;
-    public float stopDistance = 2f; // Dist‚ncia mÌnima pra atacar
+    public float stopDistance = 2f;
     public float alcanceDeAtaque = 3f;
-
 
     private Animator animator;
 
     // Vida
     public int vidaMaxima = 100;
     private int vidaAtual;
+    private bool estaMorto = false;
 
+    // Ataque
     private bool podeAtacar = true;
     public float tempoEntreAtaques = 2f;
     public int danoAtaque = 20;
 
-    private bool estaMorto = false;
+    // √Årea de detec√ß√£o
+    private bool jogadorDetectado = false;
 
+    // Dano
+    private bool tomandoDano = false;
 
     void Start()
     {
@@ -29,8 +33,7 @@ public class GolemEnemy : MonoBehaviour
 
     void Update()
     {
-        if (player == null || estaMorto || tomandoDano) return;
-
+        if (player == null || estaMorto || tomandoDano || !jogadorDetectado) return;
 
         float distancia = Vector3.Distance(transform.position, player.position);
 
@@ -45,25 +48,22 @@ public class GolemEnemy : MonoBehaviour
         }
         else
         {
-            if (distancia <= stopDistance)
+            animator.SetBool("IsRuning", false);
+
+            if (distancia <= alcanceDeAtaque && podeAtacar)
             {
-                animator.SetBool("IsRuning", false);
-
-                if (distancia <= alcanceDeAtaque && podeAtacar)
-                {
-                    animator.SetTrigger("Attack");
-                    podeAtacar = false;
-                    Invoke("AtacarPlayer", 0.5f);
-                    Invoke("ResetarAtaque", tempoEntreAtaques);
-                }
+                animator.SetTrigger("Attack");
+                podeAtacar = false;
+                Invoke("AtacarPlayer", 0.5f);
+                Invoke("ResetarAtaque", tempoEntreAtaques);
             }
-
         }
     }
 
     void AtacarPlayer()
     {
-        // Verifica se o player tem o script Movimento_Player
+        if (player == null) return;
+
         Movimento_Player mp = player.GetComponent<Movimento_Player>();
         if (mp != null)
         {
@@ -76,8 +76,6 @@ public class GolemEnemy : MonoBehaviour
         podeAtacar = true;
     }
 
-    private bool tomandoDano = false;
-
     public void TomarDano(int dano)
     {
         if (estaMorto || tomandoDano) return;
@@ -86,7 +84,7 @@ public class GolemEnemy : MonoBehaviour
         animator.SetTrigger("TomarDano");
         tomandoDano = true;
 
-        Invoke("LiberarDano", 0.5f); // tempo que dura a animaÁ„o de dano
+        Invoke("LiberarDano", 0.5f);
 
         if (vidaAtual <= 0)
         {
@@ -101,7 +99,28 @@ public class GolemEnemy : MonoBehaviour
 
     void Morrer()
     {
+        estaMorto = true;
         animator.SetTrigger("Morrer");
-        Destroy(gameObject, 2f); // d· tempo da animaÁ„o acontecer
+        Destroy(gameObject, 2f);
+    }
+
+    // ‚¨áÔ∏è TRIGGERS DA √ÅREA DE DETEC√á√ÉO
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            jogadorDetectado = true;
+            player = other.transform;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            jogadorDetectado = false;
+            animator.SetBool("IsRuning", false); // para a anima√ß√£o quando sai da √°rea
+        }
     }
 }

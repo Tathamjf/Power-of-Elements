@@ -17,7 +17,7 @@ public class SpeedPowerUp : MonoBehaviour
         {
             Debug.Log("Algo entrou no trigger: " + other.name);
 
-            Debug.Log("Power-up coletado!");
+            Debug.Log("Velocidade aumentada!");
             Movimento_Player player = other.GetComponent<Movimento_Player>();
             if (player != null)
             {

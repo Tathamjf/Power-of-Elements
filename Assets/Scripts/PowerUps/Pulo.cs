@@ -3,7 +3,7 @@ using UnityEngine;
 public class Pulo : MonoBehaviour
 {
     public float multiplicador = 1.5f;
-    public float duracao = 5f;
+    //public float duracao = 5f;
 
 
     void Start()
@@ -21,7 +21,7 @@ public class Pulo : MonoBehaviour
             Movimento_Player player = other.GetComponent<Movimento_Player>();
             if (player != null)
             {
-                player.AumentarPuloTemporariamente(multiplicador, duracao);
+                player.AumentarPuloTemporariamente(multiplicador);
             }
 
             Destroy(gameObject);
