@@ -5,7 +5,7 @@ using UnityEngine;
 public class SpikeTrapDemo : MonoBehaviour {
 
     public Animator spikeTrapAnim;
-    public int dano = 20;
+    public int dano = 1;
     public float impulso;
     public GameObject player;
     private bool podeCausarDano = false;

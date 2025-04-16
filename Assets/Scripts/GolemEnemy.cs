@@ -10,14 +10,14 @@ public class GolemEnemy : MonoBehaviour
     private Animator animator;
 
     // Vida
-    public int vidaMaxima = 100;
+    public int vidaMaxima = 30;
     private int vidaAtual;
     private bool estaMorto = false;
 
     // Ataque
     private bool podeAtacar = true;
     public float tempoEntreAtaques = 2f;
-    public int danoAtaque = 20;
+    public int danoAtaque = 3;
 
     // Área de detecção
     private bool jogadorDetectado = false;

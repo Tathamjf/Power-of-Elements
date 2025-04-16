@@ -4,6 +4,7 @@ using UnityEngine;
 public class Movimento_Player : MonoBehaviour
 {
     private Transform myCamera;
+
     private CharacterController controller;
     private Animator animator;
 
@@ -30,15 +31,16 @@ public class Movimento_Player : MonoBehaviour
 
 
     //sistema de vida
-    public int vidaMaxima = 100;
+    public int vidaMaxima = 20;
     public int vidaAtual;
+    
 
-    [SerializeField] private BarraDeVida barraDeVida;
+    [SerializeField] private BarraDeVida barra;
 
     //sistema de ataque
     private bool podeMover = true; // Começa podendo se mover
 
-    public int dano = 25;
+    public int dano = 5;
     public float alcance = 2f;
     public LayerMask Enemy;
 
@@ -51,16 +53,33 @@ public class Movimento_Player : MonoBehaviour
         vidaAtual = vidaMaxima;
         velocidadeAtual = velocidadeBase;
 
+        barra.ColocarVidaMaxima(vidaMaxima);
 
-        myCamera = Camera.main.transform;
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
 
+        StartCoroutine(EsperarCamera());
     }
+
+    private IEnumerator EsperarCamera()
+    {
+        while (Camera.main == null)
+        {
+            yield return null;
+        }
+
+        myCamera = Camera.main.transform;
+    }
+
+
+
 
     // Update is called once per frame
     void Update()
     {
+        if (myCamera == null) return;
+
+
         if (!podeMover)
         {
             // Ainda aplica gravidade enquanto não pode mover
@@ -72,11 +91,16 @@ public class Movimento_Player : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        Vector3 movimento = new Vector3(horizontal, 0, vertical);
+        var movimento = new Vector3(horizontal, 0, vertical);
         movimento = myCamera.TransformDirection(movimento);
         movimento.y = 0;
 
-        Vector3 movimentoFinal = (movimento * velocidadeAtual) + new Vector3(0, forcaY, 0);
+        //Debug.Log($"Movimento: {movimento}, forcaY: {forcaY}, estaNoChao: {estaNoChao}");
+
+
+        //movimento final
+        Vector3 movimentoFinal = (movimento * velocidadeAtual);
+        movimentoFinal.y = forcaY;
 
         controller.Move(movimentoFinal * Time.deltaTime);
 
@@ -87,22 +111,24 @@ public class Movimento_Player : MonoBehaviour
 
         animator.SetBool("IsWalking", movimento != Vector3.zero);
 
+        // gravidade e chão
         estaNoChao = Physics.CheckSphere(footPlayer.position, 0.3f, colisaoPlayer);
         animator.SetBool("EstaNoChao", estaNoChao);
 
+        if (estaNoChao && forcaY < 0)
+        {
+            forcaY = -2f; // pequena força pra manter no chão
+        }
 
-        //pulo
+        // pulo
         if (Input.GetKeyDown(KeyCode.Space) && estaNoChao)
         {
             forcaY = forcaPuloBase;
             animator.SetTrigger("Jump");
         }
 
-        // gravidade
-        if (forcaY > -9.81f)
-        {
-            forcaY += -9.81f * Time.deltaTime;
-        }
+        // aplica gravidade
+        forcaY += -9.81f * Time.deltaTime;
 
         // ataque
         if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -148,6 +174,8 @@ public class Movimento_Player : MonoBehaviour
         if (estaInvencivel) return; // Ignora dano se invencível
 
         vidaAtual -= danoRecebido;
+        barra.AlterarBarraVida(vidaAtual, danoRecebido);
+        
         animator.SetTrigger("TomarDano");
         podeMover = false;
 

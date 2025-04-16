@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class DanoPorFogo : MonoBehaviour
 {
-    public int danoPorSegundo = 10;
+    public int danoPorSegundo = 2;
     private float tempoDano = 0f;
     public float intervaloDano = 1f;
 
