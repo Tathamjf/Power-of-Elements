@@ -22,8 +22,9 @@ public class Movimento_Player : MonoBehaviour
     private Coroutine boostCoroutine;
 
     //power-up pulo
-    private float forcaPuloBase = 10f; 
+    public float forcaPuloBase = 10f; 
     private Coroutine puloCoroutine;
+    public float duracao = 5f;
 
     //power-up invencibilidade
     private bool estaInvencivel = false;
@@ -48,6 +49,7 @@ public class Movimento_Player : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        
         Cursor.lockState = CursorLockMode.Locked;
 
         vidaAtual = vidaMaxima;
@@ -227,25 +229,6 @@ public class Movimento_Player : MonoBehaviour
         velocidadeAtual = velocidadeBase;
     }
 
-    //power-ip pulo
-    public void AumentarPuloTemporariamente(float multiplicador)
-    {
-        if (puloCoroutine != null)
-        {
-            StopCoroutine(puloCoroutine);
-        }
-
-        //puloCoroutine = StartCoroutine(PuloBoostCoroutine(multiplicador, duracao));
-    }
-
-    private IEnumerator PuloBoostCoroutine(float multiplicador, float duracao)
-    {
-        forcaPuloBase *= multiplicador;
-        Debug.Log("Pulo aumentado!");
-        yield return new WaitForSeconds(duracao);
-        forcaPuloBase /= multiplicador;
-        Debug.Log("Pulo voltou ao normal.");
-    }
 
     //power-up invencibilidade
     public void AtivarInvencibilidadeTemporaria(float duracao)

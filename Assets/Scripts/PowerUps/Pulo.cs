@@ -2,13 +2,14 @@ using UnityEngine;
 
 public class Pulo : MonoBehaviour
 {
-    public float multiplicador = 1.5f;
-    //public float duracao = 5f;
-
+    private Movimento_Player move;
+    public GameObject player;
 
     void Start()
     {
         Debug.Log("PowerUp carregado.");
+        move = player.GetComponent<Movimento_Player>();
+        
     }
 
     private void OnTriggerEnter(Collider other)
@@ -21,7 +22,7 @@ public class Pulo : MonoBehaviour
             Movimento_Player player = other.GetComponent<Movimento_Player>();
             if (player != null)
             {
-                player.AumentarPuloTemporariamente(multiplicador);
+                move.forcaPuloBase = 20f;
             }
 
             Destroy(gameObject);
